@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Utente | Perizie Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 600px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            border: none;
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        .illustration {
+            max-width: 250px;
+            margin: 0 auto 1.5rem;
+            display: block;
+        }
+        
+        .btn-logout {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-logout:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(255, 65, 108, 0.4);
+        }
+        
+        .user-info {
+            background-color: #f1f5f9;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .badge {
+            font-size: 0.85rem;
+            padding: 0.5em 0.8em;
+        }
+
+        .error-container {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <!-- Schermata principale -->
+        <div class="card mb-4" id="mainCard">
+            <div class="card-header">
+                <h2 class="mb-0"><i class="fas fa-mobile-alt me-2"></i> Accesso Mobile</h2>
+            </div>
+            <div class="card-body text-center">
+                <img src="https://cdni.iconscout.com/illustration/premium/thumb/mobile-app-development-3462281-2895925.png" alt="Mobile App" class="illustration">
+                
+                <h3 class="mb-3">L'app è ottimizzata per dispositivi mobili</h3>
+                <p class="text-muted mb-4">
+                    Per utilizzare al meglio l'applicazione Perizie Pro, accedi dal tuo smartphone o tablet. 
+                    Questo ti permetterà di creare perizie sul campo con accesso alla fotocamera e alla geolocalizzazione.
+                </p>
+                
+                <div class="user-info d-none" id="userInfoSection">
+                    <h5 class="mb-2">Utente collegato</h5>
+                    <p class="mb-1"><strong>Nome:</strong> <span id="userName">-</span></p>
+                    <p class="mb-1"><strong>Email:</strong> <span id="userEmail">-</span></p>
+                    <p class="mb-0"><strong>Ruolo:</strong> <span id="userBadge" class="badge bg-primary">-</span></p>
+                </div>
+                
+                <a href="https://play.google.com/store" target="_blank" class="btn btn-primary mb-3">
+                    <i class="fab fa-android me-2"></i> Scarica per Android
+                </a>
+                <a href="https://www.apple.com/app-store/" target="_blank" class="btn btn-secondary mb-3">
+                    <i class="fab fa-apple me-2"></i> Scarica per iOS
+                </a>
+                <div class="d-grid">
+                    <button id="logoutButton" class="btn btn-logout">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schermata errore autenticazione -->
+        <div class="card error-container" id="errorCard">
+            <div class="card-header bg-danger">
+                <h2 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i> Errore di Autenticazione</h2>
+            </div>
+            <div class="card-body text-center">
+                <img src="https://cdni.iconscout.com/illustration/premium/thumb/error-404-4344461-3613889.png" alt="Error" class="illustration" style="max-width: 200px;">
+                
+                <h3 class="mb-3">Sessione scaduta o non valida</h3>
+                <p class="text-muted mb-4">
+                    Non sei autenticato o la tua sessione è scaduta. Per favore, effettua nuovamente il login.
+                </p>
+                
+                <div class="d-grid">
+                    <a href="/index.html" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i> Vai al Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="libreria.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Verifica token
+            const token = localStorage.getItem("authToken");
+            
+            if (!token) {
+                // Token non presente, mostra schermata di errore
+                $("#mainCard").hide();
+                $("#errorCard").show();
+            } else {
+                try {
+                    // Decodifica il token per ottenere le informazioni utente
+                    // (Nota: questa decodifica lato client è solo per visualizzazione, non per sicurezza)
+                    const base64Url = token.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                    }).join(''));
+                    
+                    const userData = JSON.parse(jsonPayload);
+                    
+                    // Mostra informazioni utente
+                    $("#userName").text(userData.nome + " " + userData.cognome);
+                    $("#userEmail").text(userData.email || 'N/A');
+                    
+                    // Imposta badge ruolo
+                    if (userData.ruolo === 'ADMIN') {
+                        $("#userBadge").removeClass('bg-primary').addClass('bg-danger').text('Amministratore');
+                    } else {
+                        $("#userBadge").text('Operatore');
+                    }
+                    
+                    $("#userInfoSection").removeClass('d-none');
+                    
+                    // Verifica scadenza token (esempio)
+                    const expiryTime = userData.exp * 1000; // Converte in millisecondi
+                    const currentTime = Date.now();
+                    
+                    if (currentTime > expiryTime) {
+                        // Token scaduto
+                        alert("La tua sessione è scaduta. Per favore, effettua nuovamente il login.");
+                        localStorage.removeItem("authToken");
+                        window.location.href = "/index.html";
+                    }
+                    
+                } catch (err) {
+                    console.error("Errore durante la decodifica del token:", err);
+                    localStorage.removeItem("authToken");
+                    window.location.href = "/index.html";
+                }
+            }
+            
+            // Gestione logout
+            $("#logoutButton").on("click", function() {
+                localStorage.removeItem("authToken");
+                sessionStorage.removeItem("authToken");
+                window.location.href = "/index.html";
+            });
+            
+            // Rileva se l'utente è effettivamente su mobile
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if (isMobile) {
+                // Su mobile, aggiungi un messaggio che indica che possono accedere
+                $(".card-body p.text-muted").html('Ottimo! Stai già utilizzando un dispositivo mobile. <br>Per la migliore esperienza, scarica la nostra app dedicata.');
+            }
+        });
+    </script>
+</body>
+</html>

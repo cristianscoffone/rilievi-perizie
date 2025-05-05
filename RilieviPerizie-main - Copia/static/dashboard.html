@@ -1,0 +1,1019 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Rilievi e Perizie</title>
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.0.0/dist/maplibre-gl.css" />
+    <script src="https://unpkg.com/maplibre-gl@5.0.0/dist/maplibre-gl.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="dashboard.js" defer></script>
+    <script src="changePassword.js" defer></script>
+    <script src="libreria.js"></script>
+    <style>
+        :root {
+            /* Modern Light Theme */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --bg-accent: #e2e8f0;
+            
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            
+            --border-color: #e2e8f0;
+            
+            --accent-green: #10b981;
+            --accent-green-light: #d1fae5;
+            --accent-orange: #f97316;
+            --accent-orange-light: #ffedd5;
+            --accent-red: #ef4444;
+            --accent-red-light: #fee2e2;
+            --accent-blue: #3b82f6;
+            --accent-blue-light: #dbeafe;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-inner: inset 0 2px 4px 0 rgba(0,0,0,0.05);
+            
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            
+            --font-size-xs: 0.75rem;
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            --font-size-4xl: 2.25rem;
+            
+            --transition-fast: all 0.15s ease;
+            --transition-normal: all 0.25s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 270px;
+            background-color: var(--bg-primary);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        
+        .logo-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            background-color: var(--accent-green);
+            color: white;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: var(--font-size-lg);
+            color: var(--text-primary);
+        }
+        
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+        
+        .nav-header {
+            text-transform: uppercase;
+            font-size: var(--font-size-xs);
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0.5rem;
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-normal);
+            margin-bottom: 0.25rem;
+        }
+        
+        .nav-item:hover {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active {
+            background-color: var(--accent-green-light);
+            color: var (--accent-green);
+        }
+        
+        .nav-icon {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .mt-auto {
+            margin-top: auto;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 270px;
+            padding: 1.5rem 2rem;
+            width: calc(100% - 270px);
+        }
+        
+        /* Header */
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .page-title {
+            font-weight: 700;
+            font-size: var(--font-size-2xl);
+            color: var(--text-primary);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var (--transition-fast);
+        }
+        
+        .profile-btn:hover {
+            box-shadow: var(--shadow-md);
+        }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--accent-orange-light);
+            color: var(--accent-orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+        }
+        
+        .profile-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .btn-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-lg);
+            background-color: var (--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var (--transition-fast);
+        }
+        
+        .btn-action:hover {
+            background-color: var(--accent-red-light);
+            color: var(--accent-red);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 1.5rem;
+        }
+        
+        .map-section {
+            grid-column: 1;
+            grid-row: 1 / span 2;
+        }
+        
+        /* Card Components */
+        .card {
+            background-color: var(--bg-primary);
+            border-radius: var (--radius-xl);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            background-color: transparent;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .card-header-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .icon-green {
+            background-color: var(--accent-green);
+        }
+        
+        .icon-red {
+            background-color: var(--accent-red);
+        }
+        
+        .card-header-title {
+            font-weight: 700;
+            font-size: var(--font-size-lg);
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        /* Stili per il modal dettaglio perizia */
+#surveyDetailModal .modal-xl {
+    max-width: 1140px;
+}
+
+.photo-gallery .card {
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.photo-gallery .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.photo-gallery img {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.photo-gallery img:hover {
+    opacity: 0.9;
+}
+
+.lightbox-overlay {
+    animation: fadeIn 0.3s ease;
+}
+
+.lightbox-overlay img {
+    animation: zoomIn 0.3s ease;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+/* Stili per la tabella utenti */
+#usersTableSection .table {
+    vertical-align: middle;
+}
+
+#usersTableSection .badge {
+    font-size: 0.75rem;
+    padding: 0.45em 0.8em;
+}
+
+#usersTableSection .btn-sm {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+#usersTableSection .btn-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+#usersTableSection a.text-decoration-none:hover {
+    color: var(--primary);
+}
+
+#usersTableSection a.text-decoration-none .text-muted {
+    transition: color 0.2s ease;
+}
+
+#usersTableSection a.text-decoration-none:hover .text-muted {
+    color: var(--primary) !important;
+}
+/* Stili per i pulsanti azione nella tabella utenti */
+.btn-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 6px;
+    border: none;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-action:first-child {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.btn-action:last-child {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-action:first-child:hover {
+    background-color: #0b5ed7;
+}
+
+.btn-action:last-child:hover {
+    background-color: #bb2d3b;
+}
+
+.btn-action:active {
+    transform: translateY(0);
+}
+
+/* Assicura che le icone siano centrate */
+.btn-action i {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: var(--font-size-base);
+            transition: var (--transition-fast);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 3px var(--accent-green-light);
+            background-color: var(--bg-primary);
+        }
+        
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1em;
+            padding-right: 2.5rem;
+        }
+        
+        .password-control {
+            border-color: var(--accent-red);
+            background-color: var (--accent-red-light);
+        }
+        
+        .password-control:focus {
+            border-color: var(--accent-red);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var (--transition-fast);
+            border: none;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-green);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0ea271;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+        
+        .btn-danger {
+            background-color: var(--accent-red);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+        
+        .btn-icon {
+            margin-left: 0.25rem;
+            transition: var(--transition-fast);
+        }
+        
+        .btn:hover .btn-icon {
+            transform: translateX(2px);
+        }
+        
+        /* Map Container */
+        .map-container {
+            width: 100%;
+            height: 600px;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            background-color: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 0.75rem;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .map-filter-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--accent-blue-light);
+            color: var(--accent-blue);
+            border-radius: var(--radius-md);
+            flex-shrink: 0;
+        }
+        
+        #userFilter {
+            min-width: 180px;
+        }
+        .marker-popup {
+    min-width: 280px;
+    max-width: 320px;
+}
+
+.popup-header {
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.popup-body {
+    padding: 0 4px;
+}
+
+.popup-img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.popup-img:hover {
+    transform: scale(1.05);
+}
+
+.maplibregl-popup-content {
+    padding: 15px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+
+.maplibregl-popup-close-button {
+    font-size: 18px !important;
+    color: #6c757d !important;
+    top: 8px !important;
+    right: 8px !important;
+}
+
+.photo-gallery {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.view-all-photos {
+    text-decoration: none;
+    cursor: pointer;
+}
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                padding: 1.25rem 0.75rem;
+            }
+            
+            .logo-text, .nav-text {
+                display: none;
+            }
+            
+            .nav-item {
+                justify-content: center;
+            }
+            
+            .nav-icon {
+                margin-right: 0;
+            }
+            
+            .nav-header {
+                text-align: center;
+                padding-left: 0;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .map-section {
+                grid-column: 1;
+                grid-row: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-ruler-combined"></i>
+                </div>
+                <span class="logo-text">Perizie Pro</span>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-header">Dashboard</div>
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-chart-line nav-icon"></i>
+                    <span class="nav-text">Panoramica</span>
+                </a>
+                <a href="#" class="nav-item" id="showSurveyList">
+                    <i class="fas fa-map-marker-alt nav-icon"></i>
+                    <span class="nav-text">Rilievi effettuati</span>
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-header">Gestione</div>
+                <a href="#" class="nav-item" id="showUsersList">
+                    <i class="fas fa-users nav-icon"></i>
+                    <span class="nav-text">Utenti</span>
+                </a>
+                
+            </div>
+            
+            <a href="#" id="logoutLink" class="nav-item mt-auto">
+                <i class="fas fa-sign-out-alt nav-icon"></i>
+                <span class="nav-text">Logout</span>
+            </a>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header with user info -->
+            <header class="content-header">
+                <h1 class="page-title">Dashboard</h1>
+                <div class="header-actions">
+                    <div class="profile-btn">
+                        <div class="avatar">AP</div>
+                        <span class="profile-name">Admin Panel</span>
+                    </div>
+                    <button id="logout" class="btn-action">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Content Grid -->
+            <div class="dashboard-grid">
+                <!-- Map Section -->
+                <div class="map-section">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <div class="card-header-icon icon-green">
+                                <i class="fas fa-map-marked-alt"></i>
+                            </div>
+                            <h2 class="card-header-title">Mappa Interventi e Rilevazioni</h2>
+                        </div>
+                        <div class="card-body p-0 position-relative">
+                            <div class="map-container">
+                                <div id="map"></div>
+                                <div class="map-controls">
+                                    <div class="map-filter-icon">
+                                        <i class="fas fa-filter"></i>
+                                    </div>
+                                    <select id="userFilter" class="form-control">
+                                        <option value="ALL">Tutti gli utenti</option>
+                                        <!-- Options will be populated by JS -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sezione Tabella Rilievi (inizialmente nascosta) -->
+                <div id="surveysTableSection" class="map-section" style="display: none;">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <div class="card-header-icon icon-green">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <h2 class="card-header-title">Elenco Rilievi e Perizie</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div class="d-flex align-items-center">
+                                    <select id="tableSurveyFilter" class="form-control me-2" style="width: auto;">
+                                        <option value="ALL">Tutti gli utenti</option>
+                                        <!-- Options will be populated by JS -->
+                                    </select>
+                                    
+                                </div>
+                                <div class="form-group mb-0">
+                                    <input type="text" id="searchSurveys" class="form-control" placeholder="Cerca..." style="width: 250px;">
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Codice</th>
+                                            <th>Data</th>
+                                            <th>Indirizzo</th>
+                                            <th>Descrizione</th>
+                                            <th>Immagini</th>
+                                            <th>Azioni</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="surveysTableBody">
+                                        <!-- Dati popolati dinamicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="noSurveysMessage" class="text-center py-4" style="display: none;">
+                                <i class="fas fa-search me-2"></i> Nessun rilievo trovato
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sezione Tabella Utenti (inizialmente nascosta) -->
+                <div id="usersTableSection" class="map-section" style="display: none;">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <div class="card-header-icon icon-green">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h2 class="card-header-title">Gestione Utenti</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <div class="d-flex align-items-center">
+                                    <select id="userRoleFilter" class="form-control me-2" style="width: auto;">
+                                        <option value="ALL">Tutti i ruoli</option>
+                                        <option value="ADMIN">Amministratori</option>
+                                        <option value="USER">Operatori</option>
+                                    </select>
+                                    <button id="exportUsersBtn" class="btn btn-primary">
+                                        <i class="fas fa-download me-1"></i> Esporta Contatti
+                                    </button>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <input type="text" id="searchUsers" class="form-control" placeholder="Cerca utente..." style="width: 250px;">
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Cognome</th>
+                                            <th>Email</th>
+                                            <th>Telefono</th>
+                                            <th>Ruolo</th>
+                                            <th class="text-center">Azioni</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody">
+                                        <!-- Dati popolati dinamicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="noUsersMessage" class="text-center py-4" style="display: none;">
+                                <i class="fas fa-user-slash me-2"></i> Nessun utente trovato
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal per modifica utente -->
+                <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editUserModalLabel">Modifica Utente</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editUserForm">
+                                    <input type="hidden" id="editUserId">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="editNome">Nome</label>
+                                        <input type="text" id="editNome" name="editNome" class="form-control" required>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="editCognome">Cognome</label>
+                                        <input type="text" id="editCognome" name="editCognome" class="form-control" required>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="editEmail">Email</label>
+                                        <input type="email" id="editEmail" name="editEmail" class="form-control" required>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="editTelefono">Telefono</label>
+                                        <input type="text" id="editTelefono" name="editTelefono" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="editRuolo">Ruolo</label>
+                                        <select id="editRuolo" name="editRuolo" class="form-control" required>
+                                            <option value="USER">OPERATORE</option>
+                                            <option value="ADMIN">AMMINISTRATORE</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                                <button type="button" class="btn btn-primary" id="saveUserChanges">Salva modifiche</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal di conferma eliminazione -->
+                <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmDeleteModalLabel">Conferma eliminazione</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="confirmDeleteText">
+                                Sei sicuro di voler eliminare questo utente?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                                <button type="button" class="btn btn-danger" id="confirmDelete">Elimina</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Registration -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-icon icon-green">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <h2 class="card-header-title">Registra Nuovo Utente</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="createUserForm">
+                            <div class="form-group">
+                                <label class="form-label" for="nome">Nome</label>
+                                <input type="text" id="nome" name="nome" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="cognome">Cognome</label>
+                                <input type="text" id="cognome" name="cognome" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="email">Email</label>
+                                <input type="email" id="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="telefono">Telefono</label>
+                                <input type="text" id="telefono" name="telefono" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="ruolo">Ruolo</label>
+                                <select id="ruolo" name="ruolo" class="form-control" required>
+                                    <option value="" disabled selected>Seleziona ruolo</option>
+                                    <option value="USER">OPERATORE</option>
+                                    <option value="ADMIN">AMMINISTRATORE</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <span>Crea Utente</span>
+                                <i class="fas fa-arrow-right btn-icon"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Password Security -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-header-icon icon-red">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h2 class="card-header-title">Cambio Password</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="changePasswordForm">
+                            <div class="form-group">
+                                <label class="form-label" for="currentPassword">Password Attuale</label>
+                                <input type="password" id="currentPassword" name="currentPassword" class="form-control password-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="newPassword">Nuova Password</label>
+                                <input type="password" id="newPassword" name="newPassword" class="form-control password-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="confirmPassword">Conferma Password</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control password-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-danger w-100">
+                                <span>Aggiorna Password</span>
+                                <i class="fas fa-lock btn-icon"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Dettaglio Perizia -->
+    <div class="modal fade" id="surveyDetailModal" tabindex="-1" aria-labelledby="surveyDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="surveyDetailModalLabel">Dettaglio Perizia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="surveyDetailContent">
+                        <!-- Contenuto dinamico -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-primary" id="saveDetailChanges">Salva Modifiche</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast di conferma -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+      <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            <i class="fas fa-check-circle me-2"></i>
+            <span id="toastMessage"></span>
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
