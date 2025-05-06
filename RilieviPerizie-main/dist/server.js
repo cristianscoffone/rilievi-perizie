@@ -113,20 +113,22 @@ app.get("/api/getUtenti", (req, res) => __awaiter(void 0, void 0, void 0, functi
 }));
 // POST /api/login
 app.post("/api/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, password } = req.body;
-    console.log("Dati ricevuti:", { username, password });
-    if (!username || !password) {
-        return res.status(400).send("Username e password sono obbligatori.");
+    const { email, password } = req.body;
+    console.log("Dati ricevuti:", { email, password });
+    if (!email || !password) {
+        return res.status(400).send("Email e password sono obbligatori.");
     }
     const client = new mongodb_1.MongoClient(CONNECTION_STRING);
     try {
         yield client.connect();
         const collection = client.db(DBNAME).collection("utenti");
-        const user = yield collection.findOne({ username });
+        const user = yield collection.findOne({ email });
         console.log("Utente trovato:", user);
         if (!user) {
             return res.status(401).send("Utente non trovato.");
         }
+        
+        // Rest of the code remains the same...
         const isPasswordValid = yield bcryptjs_1.default.compare(password, user.password);
         if (!isPasswordValid) {
             return res.status(401).send("Password errata.");
