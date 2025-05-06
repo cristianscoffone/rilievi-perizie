@@ -262,16 +262,11 @@
             
             <form id="loginForm">
                 <div class="form-floating">
-                    <input type="text" id="nome" name="nome" class="form-control" placeholder=" " required>
-                    <label for="nome">Nome</label>
+                    <input type="text" id="email" name="email" class="form-control" placeholder=" " required>
+                    <label for="nome">Email</label>
                     <i class="fas fa-user input-icon"></i>
                 </div>
-                
-                <div class="form-floating">
-                    <input type="text" id="cognome" name="cognome" class="form-control" placeholder=" " required>
-                    <label for="cognome">Cognome</label>
-                    <i class="fas fa-user-tag input-icon"></i>
-                </div>
+              
                 
                 <div class="form-floating">
                     <input type="password" id="password" name="password" class="form-control" placeholder=" " required>
@@ -291,18 +286,4 @@
 </body>
 </html>
 <script>
-    // Nel tuo codice server
-const bcrypt = require('bcryptjs');
-
-// Per verificare se una password corrisponde all'hash
-async function checkPassword(password, storedHash) {
-    // Returns true or false
-    return await bcrypt.compare(password, storedHash);
-}
-
-// Esempio di utilizzo
-checkPassword("password", "$2b$10$CH1KBQDer1lxgrbS7UcV1O.blmQGQ4QwddGKEjwm.Pe8i9eZnsr7.")
-    .then(isMatch => {
-        console.log(isMatch ? "Password corretta!" : "Password errata");
-    });
-</script>
+ 
