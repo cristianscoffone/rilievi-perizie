@@ -4,20 +4,24 @@ $(document).ready(function () {
     $("#loginForm").on("submit", async function (event) {
         event.preventDefault();
 
-        const nome = $("#nome").val();
-        const cognome = $("#cognome").val();
+       const email = $("#email").val();
         const password = $("#password").val();
 
-        if (!nome || !cognome || !password) {
-            $("#errorMessage").text("Tutti i campi sono obbligatori.");
+        if (!email || !password) {
+            $("#errorMessage").text("Email e password sono obbligatori.");
             return;
         }
 
-        const username = `${nome.toLowerCase()}.${cognome.toLowerCase()}`;
+        // Simple email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            $("#errorMessage").text("Inserisci un indirizzo email valido.");
+            return;
+        }
 
         try {
             console.log("Invio richiesta di login...");
-            let response = await inviaRichiesta("POST", "/api/login", { username, password });
+            let response = await inviaRichiesta("POST", "/api/login", { email, password });
             console.log("Risposta ricevuta:", response);
 
             if (response.status === 200) {
