@@ -93,7 +93,7 @@ app.use(express.urlencoded({ extended: true, limit: "20mb" }));
 
 /* ******* (Sezione 3) USER ROUTES  ********** */
 
-// GET /api/utenti
+
 app.get("/api/getUtenti", async (req: Request, res: Response) => {
   const client = new MongoClient(CONNECTION_STRING);
   try {
@@ -108,14 +108,14 @@ app.get("/api/getUtenti", async (req: Request, res: Response) => {
       await client.close();
   }
 });
-// POST /api/login
+
 app.post("/api/login", async (req: Request, res: Response) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
-  console.log("Dati ricevuti:", { username, password });
+  console.log("Dati ricevuti:", { email, password });
 
-  if (!username || !password) {
-    return res.status(400).send("Username e password sono obbligatori.");
+  if (!email || !password) {
+    return res.status(400).send("Email e password sono obbligatori.");
   }
 
   const client = new MongoClient(CONNECTION_STRING);
@@ -123,9 +123,9 @@ app.post("/api/login", async (req: Request, res: Response) => {
     await client.connect();
     const collection = client.db(DBNAME).collection("utenti");
 
-    const user = await collection.findOne({ username });
+    const user = await collection.findOne({ email });
     console.log("Utente trovato:", user);
-
+//fdsf
     if (!user) {
       return res.status(401).send("Utente non trovato.");
     }
@@ -171,7 +171,7 @@ app.post("/api/login", async (req: Request, res: Response) => {
     await client.close();
   }
 });
-// POST /api/utenti
+
 app.post("/api/createUser", async (req: Request, res: Response) => {
   const { nome, cognome, email, telefono, ruolo } = req.body;
 
@@ -228,7 +228,6 @@ app.post("/api/createUser", async (req: Request, res: Response) => {
   }
 });
 
-// GET /api/getPerizie
 app.get("/api/getPerizie", async (req: Request, res: Response) => {
   const userId = req.query.userId as string;
   const client = new MongoClient(CONNECTION_STRING);
@@ -256,7 +255,7 @@ app.get("/api/getPerizie", async (req: Request, res: Response) => {
   }
 });
 
-// PUT /api/updatePerizia/:codice_perizia
+
 app.put("/api/updatePerizia/:codice_perizia", async (req: Request, res: Response) => {
   const codicePerizia = req.params.codice_perizia;
   const { descrizione, fotografie } = req.body;
@@ -283,7 +282,7 @@ app.put("/api/updatePerizia/:codice_perizia", async (req: Request, res: Response
       };
     });
 
-    // Aggiorna la perizia
+ 
     const result = await collection.updateOne(
       { codice_perizia: codicePerizia },
       { $set: { descrizione, fotografie: updatedFotografie } }
@@ -302,7 +301,7 @@ app.put("/api/updatePerizia/:codice_perizia", async (req: Request, res: Response
   }
 });
 
-// POST /api/cambia-password
+
 app.post("/api/cambia-password", async (req: Request, res: Response) => {
   const { currentPassword, nuovaPassword } = req.body;
   const token = req.headers.authorization?.split(" ")[1];
@@ -403,7 +402,7 @@ app.post("/api/upload-perizia", async (req: Request, res: Response) => {
     return res.status(500).send("Errore interno del server.");
   }
 });
-// GET /api/users/:id - Ottieni un utente specifico
+
 app.get("/api/users/:id", async (req: Request, res: Response) => {
   const userId = req.params.id;
   
@@ -429,7 +428,7 @@ app.get("/api/users/:id", async (req: Request, res: Response) => {
     await client.close();
   }
 });
-// PUT /api/users/:id - Aggiorna un utente
+
 app.put("/api/users/:id", async (req: Request, res: Response) => {
   const userId = req.params.id;
   const { nome, cognome, email, telefono, ruolo } = req.body;
@@ -446,14 +445,13 @@ app.put("/api/users/:id", async (req: Request, res: Response) => {
   try {
     await client.connect();
     const collection = client.db(DBNAME).collection("utenti");
-    
-    // Verificare se l'utente esiste
+ 
     const existingUser = await collection.findOne({ _id: new ObjectId(userId) });
     if (!existingUser) {
       return res.status(404).send("Utente non trovato.");
     }
     
-    // Verificare se l'email è già utilizzata da un altro utente
+
     const duplicateEmail = await collection.findOne({ 
       email, 
       _id: { $ne: new ObjectId(userId) } 
@@ -472,7 +470,7 @@ app.put("/api/users/:id", async (req: Request, res: Response) => {
           email,
           telefono,
           ruolo,
-          username: `${nome.toLowerCase()}.${cognome.toLowerCase()}` // Aggiorna anche lo username
+          username: `${nome.toLowerCase()}.${cognome.toLowerCase()}` 
         } 
       }
     );
@@ -489,7 +487,7 @@ app.put("/api/users/:id", async (req: Request, res: Response) => {
     await client.close();
   }
 });
-// DELETE /api/users/:id - Elimina un utente
+
 app.delete("/api/users/:id", async (req: Request, res: Response) => {
   const userId = req.params.id;
   
